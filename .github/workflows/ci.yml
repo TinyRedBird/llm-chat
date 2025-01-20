@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         with: 
           node-version: 16.x
-          cache: true  # 使用缓存来加速依赖安装
+          #cache: true  # 使用缓存来加速依赖安装
 
       # 安装依赖并构建 Vue 应用
       - name: Install dependencies and Build Application
