@@ -3,10 +3,10 @@ name: ci/cd
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
 
       # 部署到github pages
       - name: 部署
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages  # 部署到 gh-pages 分支
