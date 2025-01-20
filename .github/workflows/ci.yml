@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]  # 只在推送到主分支时触发
+  pull_request:
+    branches: [ "master" ]  # 在主分支的 Pull Request 时触发
+  workflow_dispatch:  # 允许手动触发工作流
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # 获取代码
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # 设置 Node.js 环境
+      - name: Create Node Environment
+        uses: actions/setup-node@v4
+        with: 
+          node-version: 16.x
+          cache: true  # 使用缓存来加速依赖安装
+
+      # 安装依赖并构建 Vue 应用
+      - name: Install dependencies and Build Application
+        run: |
+          npm install
+          npm run build  # 默认构建文件会生成在 dist 文件夹中
+
+  deploy:
+    name: Deploy Application
+    needs: build  # 确保部署在构建成功后进行
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # 需要读取仓库内容权限
+      pages: write    # 需要写权限部署到 GitHub Pages
+      id-token: write # 用于验证部署源
+
+    steps:
+      # 使用 GitHub Pages 部署
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+        with:
+          folder: ./dist  # 部署 dist 目录到 GitHub Pages
+          
+    environment:
+      name: github-pages  # 部署到 GitHub Pages 环境
+      url: ${{ steps.deployment.outputs.page_url }}  # 获取部署后的 URL
