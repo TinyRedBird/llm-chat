@@ -33,15 +33,26 @@ jobs:
       # 构建 Vue 应用
       - name: Build Application
         run: npm run build  # 默认构建文件会生成在 dist 文件夹中
+        
+      # 运行测试
+      - name: 运行测试
+        run: npm run test
 
+      # 部署到github pages
+      #- name: 部署
+      #  if: github.ref == 'refs/heads/master'
+      #  uses: JamesIves/github-pages-deploy-action@v4
+      #  with:
+      #    branch: gh-pages  # 部署到 gh-pages 分支
+      #    folder: dist  # Vite 默认构建输出文件夹为 dist
   deploy:
     name: Deploy Application
     needs: build  # 确保部署在构建成功后进行
     runs-on: ubuntu-latest
-    #permissions:
+    permissions:
     # contents: read  # 需要读取仓库内容权限
     # pages: write    # 需要写权限部署到 GitHub Pages
-    # id-token: write # 用于验证部署源
+      id-token: write # 用于验证部署源
 
     steps:
       # 使用 GitHub Pages 部署
