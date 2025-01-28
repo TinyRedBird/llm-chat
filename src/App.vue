@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import SearchBar from './components/SearchBar.vue'
+import InlinePanel from './components/InlinePanel.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div>
+    <InlinePanel />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <!-- <SearchBar /> -->
+  </div>
 </template>
 
 <style scoped>
+header {
+  background-color: #343542;
+  padding: 10px;
+}
+
 header {
   line-height: 1.5;
 }
