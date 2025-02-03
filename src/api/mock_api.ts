@@ -33,8 +33,3 @@ export const mock_api = {
     )
   },
 }
-async function main() {
-  let message = await mock_api.generateSelectedSummaries({ keyword: '测试测试', current_page: 1 })
-  console.log(message.data.conversations)
-}
-main().catch((err) => console.error(err))
