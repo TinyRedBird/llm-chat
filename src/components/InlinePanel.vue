@@ -1,23 +1,28 @@
 <template>
   <div class="inline-panel">
     <div class="search-box">
+      <img src="../assets/切换.svg" @click="() => (toggle = !toggle)" />
       <input type="text" placeholder="请输入提示" v-model="keyword" />
       <div class="buttons">
         <img src="../assets/附件.svg" alt="" /> <img src="../assets/上箭头.svg" alt="" />
       </div>
     </div>
     <div class="loading-bar"></div>
-    <UserMessage
-      :text="'测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试'"
-    ></UserMessage>
-    <RobotMessage
-      :text="'测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试'"
-    ></RobotMessage>
+
     <!-- {{ keyword }}
     ----
     {{ processedMessages }} -->
     <div class="message-show">
-      <ul>
+      <ul v-if="toggle">
+        <UserMessage
+          :text="'测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试'"
+        ></UserMessage>
+        <RobotMessage
+          :text="'测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试'"
+        ></RobotMessage>
+      </ul>
+
+      <ul v-if="!toggle">
         <li v-for="(item, index) in selectedMessages">
           <span v-for="(part, idx) in processedMessages[index]['titlelist']" class="message-title">
             <span v-if="part.includes(keyword)" class="message-title_red">{{ part }}</span>
@@ -74,9 +79,10 @@ import { mock_api } from '@/api/mock_api'
 export default defineComponent({
   setup() {
     const keyword = ref('')
+    const toggle = ref(false)
     const selectedMessages = ref<SelectedSummary[]>([])
     watch(keyword, async (newVal) => {
-      const response = await mock_api.generateSelectedSummaries({
+      const response = await mock_api.generateSearchedSummaries({
         keyword: keyword.value,
         current_page: 1,
       })
@@ -94,7 +100,7 @@ export default defineComponent({
       })
     })
 
-    return { keyword, selectedMessages, processedMessages }
+    return { keyword, selectedMessages, processedMessages, toggle }
   },
   components: {
     UserMessage,
@@ -146,6 +152,7 @@ li:hover {
   border: none;
   font-size: 20px;
   color: inherit;
+  flex: 1;
 }
 .search-box input::placeholder {
   color: #aaaaaa; /* 设置占位符颜色 */

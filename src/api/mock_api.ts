@@ -16,7 +16,7 @@ let config = {
 let HttpInstance = axios.create(config)
 
 export const mock_api = {
-  async generateSelectedSummaries({
+  async generateSearchedSummaries({
     keyword,
     current_page,
   }: {

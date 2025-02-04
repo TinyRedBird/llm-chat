@@ -10,7 +10,6 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
-import {} from '@/assets/重新加载.svg'
 export default defineComponent({
   props: {
     text: String,
@@ -24,7 +23,7 @@ img {
 }
 .robot-message img {
   width: 30px;
-  margin-top:10px;
+  margin-top: 10px;
   margin-right: 5px;
   cursor: pointer;
 }
