@@ -2,7 +2,11 @@
   <div class="inline-panel">
     <div class="search-box">
       <img src="../assets/切换.svg" @click="() => (toggle = !toggle)" />
-      <input type="text" placeholder="请输入提示" v-model="keyword" />
+      <input
+        type="text"
+        :placeholder="toggle ? '请输入提示' : '请输入搜索文本'"
+        v-model="keyword"
+      />
       <div class="buttons">
         <img src="../assets/附件.svg" alt="" /> <img src="../assets/上箭头.svg" alt="" />
       </div>
@@ -12,6 +16,7 @@
     <!-- {{ keyword }}
     ----
     {{ processedMessages }} -->
+
     <div class="message-show">
       <ul v-if="toggle">
         <UserMessage
@@ -23,14 +28,20 @@
       </ul>
 
       <ul v-if="!toggle">
+        <!-- '
+        {{
+          trimedKeyword
+        }}' -->
         <li v-for="(item, index) in selectedMessages">
           <span v-for="(part, idx) in processedMessages[index]['titlelist']" class="message-title">
-            <span v-if="part.includes(keyword)" class="message-title_red">{{ part }}</span>
-            <span v-else>{{ part }}</span></span
-          >
+            <span v-if="part.includes(trimedKeyword)" class="message-title_red">{{ part }}</span>
+            <span v-else>{{ part }}</span>
+          </span>
           <p class="message-segement">
             <span v-for="(part, idx) in processedMessages[index]['subsentence']">
-              <span v-if="part.includes(keyword)" class="message-segement_red">{{ part }}</span>
+              <span v-if="part.includes(trimedKeyword)" class="message-segement_red">{{
+                part
+              }}</span>
               <span v-else>{{ part }}</span>
             </span>
           </p>
@@ -75,32 +86,43 @@ import RobotMessage from './RobotMessage.vue'
 import { ref, computed, defineComponent, watch } from 'vue'
 import type { SelectedSummary } from '@/data/DataType'
 import { mock_api } from '@/api/mock_api'
-
+import { debounce } from 'lodash'
 export default defineComponent({
   setup() {
     const keyword = ref('')
+    const trimedKeyword = computed(() => keyword.value.trim())
     const toggle = ref(false)
-    const selectedMessages = ref<SelectedSummary[]>([])
-    watch(keyword, async (newVal) => {
+
+    const selectedMessages = ref<SelectedSummary[] | null>([])
+    const debouncedFetchSummaries = debounce(async () => {
+      if (trimedKeyword.value === '') {
+        selectedMessages.value = null
+        return
+      }
       const response = await mock_api.generateSearchedSummaries({
-        keyword: keyword.value,
+        keyword: trimedKeyword.value,
         current_page: 1,
       })
 
       selectedMessages.value = response.data.conversations
+    }, 300)
+    watch(trimedKeyword, () => {
+      debouncedFetchSummaries()
     })
 
     const processedMessages = computed(() => {
       console.log(keyword)
-      const regex = new RegExp(`(${keyword.value})`, 'g')
-      return selectedMessages.value.map((item) => {
-        let titlelist = item.title.split(regex)
-        let subsentence = item.subsentence.split(regex)
-        return { titlelist, subsentence }
-      })
+      const regex = new RegExp(`(${trimedKeyword.value})`, 'g')
+      return selectedMessages.value
+        ? selectedMessages.value.map((item) => {
+            let titlelist = item.title.split(regex)
+            let subsentence = item.subsentence.split(regex)
+            return { titlelist, subsentence }
+          })
+        : []
     })
 
-    return { keyword, selectedMessages, processedMessages, toggle }
+    return { keyword, selectedMessages, processedMessages, toggle, trimedKeyword }
   },
   components: {
     UserMessage,
